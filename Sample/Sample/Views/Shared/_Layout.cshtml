@@ -1,0 +1,125 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - 我的 ASP.NET 應用程式</title>
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/fontawesome")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="Header">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <i class="fa fa-android text-white mr-2"></i>
+        <a class="navbar-brand" href="#">Sample</a>
+
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" data-bind="attr: { 'href': '@Url.Action("Index", "Home")' }, i18n:'Home'">
+                        首頁
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bind="attr: { 'href': '@Url.Action("Member", "Home")' }, i18n:'Member'">
+                        會員
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bind="attr: { 'href': '@Url.Action("Shop", "Home")' }, i18n:'Shop'">
+                        商品
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bind="attr: { 'href': '@Url.Action("Cart", "Home")' }, i18n:'Cart'">
+                        購物車
+                    </a>
+                </li>
+            </ul>
+            <div class="form-inline">
+                <select class="custom-select" data-bind="value: language">
+                    <option value="tw">中文</option>
+                    <option value="en">English</option>
+                </select>
+                <div class="form-inline ml-2">
+                    <i class="fa fa-user-circle text-white" style="font-size: 1.5rem;"></i>
+                    <a href="#" class="text-white ml-1" data-bind="click: Login">
+                        @ViewBag.UserId
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="h-100">
+        @RenderBody()
+        <hr />
+        <footer>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/knockout")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
+<script>
+	var lan = {
+		tw: {
+			Home: "首頁",
+			Shop: "商店",
+			Cart: "購物車",
+			Member: "會員",
+			Login: "登入",
+			SignUp: "註冊",
+			UserId: "帳號",
+			Password: "密碼",
+			Name: "姓名",
+			Catagories: "分類",
+			Catagories1: "分類1",
+		},
+		en: {
+			Home: "Home",
+			Shop: "Shop",
+			Cart: "Cart",
+			Member: "Member",
+			Login: "Login",
+			SignUp: "SignUp",
+			UserId: "UserId",
+			Password: "Password",
+			Name: "Name",
+			Catagories: "Catagories",
+			Catagories1: "Catagories1",
+		}
+	};
+	var vmdata = {};
+	(function () {
+		var index_vm = function () {
+			var self = this;
+			self._language = ko.observable('');
+			self.language = ko.observable('');
+			self.loa = (name) => {
+				$('#body').load(`${name}.html`);
+			}
+
+			self.Login = () => {
+				console.log('123');
+			}
+		}
+
+        //語系切換
+		ko.bindingHandlers.i18n = {
+			update: function (element, valueAccessor) {
+				var l = vmdata.vm.language() == '' || undefined ? 'tw' : vmdata.vm.language();
+				var v = lan[l][valueAccessor()];
+				element.textContent = v == undefined ? valueAccessor(): v;
+			}
+		};
+		ko.virtualElements.allowedBindings.i18n = true;
+		ko.applyBindings(vmdata['vm'] = new index_vm(), document.getElementById('Header'));
+	})();
+</script>

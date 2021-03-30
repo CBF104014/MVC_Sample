@@ -1,0 +1,41 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+	var Members = ViewBag.Members;
+}
+	<div class="container" id="Member">
+		<hr />
+		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">#</th>
+					<th scope="col">UserId</th>
+					<th scope="col">Password</th>
+					<th scope="col">Name</th>
+					<th scope="col">----</th>
+				</tr>
+			</thead>
+			<tbody>
+				@for (int i = 0; i < Members.Count; i++)
+				{
+					<tr>
+						<th scope="row">@(i+1)</th>
+						<td>@Members[i].UserId</td>
+						<td>@Members[i].Password</td>
+						<td>@Members[i].Name</td>
+						<td>
+							<input type="button" class="btn btn-dark" data-desc="@Members[i].UserId" value="刪除" onclick="DeleteMember(this);"/>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+		
+	</div>
+<script>
+	function DeleteMember(_self) {
+		console.log(_self.dataset.desc);
+
+	}
+	(function () {
+	})();
+</script>

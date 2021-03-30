@@ -1,0 +1,146 @@
+﻿@{
+	ViewBag.Title = "Home Page";
+}
+<div class="w-100 h-100" id="Home">
+	<div id="carouselExampleFade" class="carousel slide carousel-fade" data-ride="carousel" style="height:80%;">
+		<div class="carousel-inner h-100">
+			<div class="carousel-item active h-100">
+				<div class="carousel-img h-100" style="background-image:url('../Images/bg-1.jpg')">
+					<div class="carousel-caption d-none d-md-block">
+						<div class="ui horizontal divider">
+							ONE
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="carousel-item h-100">
+				<div class="carousel-img h-100" style="background-image:url('../Images/bg-2.jpg')">
+					<div class="carousel-caption d-none d-md-block">
+						<div class="ui horizontal divider">
+							TWO
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<a class="carousel-control-prev h-100" href="#carouselExampleFade" role="button" data-slide="prev">
+			<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+			<span class="sr-only">Previous</span>
+		</a>
+		<a class="carousel-control-next h-100" href="#carouselExampleFade" role="button" data-slide="next">
+			<span class="carousel-control-next-icon" aria-hidden="true"></span>
+			<span class="sr-only">Next</span>
+		</a>
+	</div>
+	<br />
+	<div class="container">
+		<div class="form-row">
+			<div class="card-body col-md-5 form-group" id="Login">
+				<div class="card card-body">
+					<label class="font-weight-bold text-center" data-bind="i18n: 'Login'">登入</label>
+					<hr />
+					<div class="form-group col-md-8">
+						<label data-bind="i18n: 'UserId'"></label>
+						<input type="text" class="form-control" data-bind="value: UserId">
+					</div>
+					<div class="form-group col-md-8">
+						<label data-bind="i18n: 'Password'"></label>
+						<input type="password" class="form-control" data-bind="value: Password">
+					</div>
+					<div class="form-group col-md-8">
+						<button type="button" class="btn btn-primary" data-bind="i18n: 'Login', click: SignIn"></button>
+					</div>
+				</div>
+			</div>
+			<div class="card-body col-md-7 form-group" id="SignUp">
+				<div class="card card-body">
+					<label class="font-weight-bold text-center" data-bind="i18n: 'SignUp'">註冊</label>
+					<hr />
+					<div class="form-group col-md-6">
+						<label data-bind="i18n: 'UserId'"></label>
+						<input type="text" class="form-control" data-bind="value: UserId">
+					</div>
+					<div class="form-group col-md-6">
+						<label data-bind="i18n: 'Password'"></label>
+						<input type="password" class="form-control" data-bind="value: Password">
+					</div>
+					<div class="form-group col-md-6">
+						<label data-bind="i18n: 'Name'"></label>
+						<input type="text" class="form-control" data-bind="value: Name">
+					</div>
+					<div class="form-group col-md-6">
+						<button type="button" class="btn btn-primary" data-bind="i18n: 'SignUp', click: SignUp"></button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+	
+</div>
+<script>
+	(function () {
+		//登入
+		var LoginVm = function () {
+			var self = this;
+			self.UserId = ko.observable('').extend({ required: true });
+			self.Password = ko.observable('').extend({ required: true });
+			self.SignIn = function () {
+				if (!validate(self)) return;
+				$.ajax({
+					type: 'Post',
+					url: '../Home/Index',
+					data: ko.toJSON(self),
+					contentType: 'application/json; charset=utf-8',
+					dataType: 'json',
+					success: function (data) {
+						console.log(data);
+					},
+					failure: function (errMsg) {
+						console.log(-999);
+					}
+				});
+			}
+		};
+
+		//註冊
+		var SignUpVm = function () {
+			var self = this;
+			self.UserId = ko.observable('').extend({ required: true });
+			self.Password = ko.observable('').extend({ required: true });
+			self.Name = ko.observable('').extend({ required: true });
+			self.SignUp = function () {
+				if (!validate(self)) return;
+				$.ajax({
+					type: 'Post',
+					url: '../Home/SignUp',
+					data: ko.toJSON(self),
+					contentType: 'application/json; charset=utf-8',
+					dataType: 'json',
+					success: function (data) {
+						console.log(data);
+					},
+					failure: function (errMsg) {
+						console.log(-999);
+					}
+				});
+			}
+		}
+
+		//驗證
+		function validate(self) {
+			//通過回傳true 否則回傳false
+			var KOvalidation = ko.validation.group(self, { deep: true });
+			KOvalidation.showAllMessages(true);
+			if (KOvalidation.isAnyMessageShown()) { alert('未填寫完畢'); return false; }
+			return true;
+		}
+
+		//綁定
+		setTimeout(function () {
+			ko.applyBindings(vmdata['Login'] = new LoginVm(), document.getElementById('Login'));
+			ko.applyBindings(vmdata['SignUp'] = new SignUpVm(), document.getElementById('SignUp'));
+		},100);
+		
+	})();
+</script>
