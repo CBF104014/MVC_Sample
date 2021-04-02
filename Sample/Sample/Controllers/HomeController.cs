@@ -13,13 +13,7 @@ namespace Sample.Controllers
     {
         public ActionResult Index()
         {
-            var UserId = "";
-            if (Session["UserId"] != null)
-            {
-                UserId = Session["UserId"].ToString();
-            }
-            ViewBag.UserId = UserId;
-            return View(Json(new { UserId = UserId }));
+            return LoginInfo();
         }
 
 
@@ -48,27 +42,57 @@ namespace Sample.Controllers
         public ActionResult Shop()
         {
             
-            return View();
+            return LoginInfo();
         }
 
         public ActionResult Cart()
         {
 
-            return View();
+            return LoginInfo();
         }
 
         public ActionResult Member()
         {
             var Result = new MemberService().ReadAll();
             ViewBag.Members = Result;
-            return View();
+            return LoginInfo();
+        }
+
+        public ActionResult BackMGT()
+        {
+            return LoginInfo();
+        }
+
+        [HttpPost]
+        public ActionResult BackMGT(Product product)
+        {
+            var Service = new ProductService();
+            if (product.Pid == null)
+            {
+                var Result = Service.Read("");
+                return Json(Result);
+            }
+            return Service.Create(product);
         }
 
         public ActionResult Test()
         {
             var Result = new MemberService().ReadAll();
             ViewBag.Members = Result;
-            return View();
+            return LoginInfo();
+        }
+
+
+        #region 登入資訊
+        #endregion
+        public ActionResult LoginInfo() {
+            var UserId = "";
+            if (Session["UserId"] != null)
+            {
+                UserId = Session["UserId"].ToString();
+            }
+            ViewBag.UserId = UserId;
+            return View(Json(new { UserId = UserId }));
         }
     }
 }

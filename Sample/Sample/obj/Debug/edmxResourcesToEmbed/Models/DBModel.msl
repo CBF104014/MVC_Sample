@@ -22,11 +22,12 @@
     <EntitySetMapping Name="Products">
       <EntityTypeMapping TypeName="MyDataBaseModel.Product">
         <MappingFragment StoreEntitySet="Product">
-          <ScalarProperty Name="Pid" ColumnName="Pid" />
-          <ScalarProperty Name="Pname" ColumnName="Pname" />
-          <ScalarProperty Name="Price" ColumnName="Price" />
-          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="Binarys" ColumnName="Binarys" />
           <ScalarProperty Name="Rankey" ColumnName="Rankey" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="Price" ColumnName="Price" />
+          <ScalarProperty Name="Pname" ColumnName="Pname" />
+          <ScalarProperty Name="Pid" ColumnName="Pid" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

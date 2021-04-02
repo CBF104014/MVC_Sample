@@ -162,6 +162,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\MemberService.cs" />
+    <Compile Include="Service\ProductService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\MyDataBase.mdf" />
@@ -599,6 +600,7 @@
     <Content Include="Scripts\knockout.validation.min.js.map" />
     <Content Include="Views\Home\Member.cshtml" />
     <Content Include="Views\Home\Test.cshtml" />
+    <Content Include="Views\Home\BackMGT.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

@@ -1,0 +1,109 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container" id="BackMGT">
+	<div class="card card-body" id="AddGroup">
+		<div class="form-group">
+			<label>產品編號</label>
+			<input type="text" class="form-control" id="Pid">
+			<label>產品名稱</label>
+			<input type="text" class="form-control" id="Pname">
+			<label>單價</label>
+			<input type="number" class="form-control" id="Price">
+			<label>產品描述</label>
+			<input type="number" class="form-control" id="Description">
+			<div class="custom-file mt-2">
+				<input type="file" class="custom-file-input" id="customFileLang" data-bind="event:{ change: ()=>{ GetBinary($element) } }">
+				<label class="custom-file-label" for="customFileLang" data-browse="上傳圖檔" data-bind="text: ImgText">選擇上傳</label>
+			</div>
+		</div>
+		<button type="button" class="btn btn-primary" data-bind="click: AddProduct">
+			<i class="fa fa-plus-circle"></i> 新增
+		</button>
+	</div>
+
+
+    <div class="card-body" id="ProductList">
+		<div data-bind="foreach: Products">
+			<label data-bind="text: Pname"></label>
+		</div>
+	</div>
+</div>
+<script>
+	(function () {
+		var Product = function(Obj){
+			var self = this;
+			self.Pid = ko.observable(Obj.Pid);
+			self.Pname = ko.observable(Obj.Pname);
+			self.Price = ko.observable(Obj.Price);
+			self.Description = ko.observable(Obj.Description);
+			self.Binarys = ko.observable(Obj.Binarys);
+		}
+
+		var AddGroup = function () {
+			var self = this;
+			self.Pid = ko.observable('');
+			self.Pname = ko.observable('');
+			self.Price = ko.observable('');
+			self.Description = ko.observable('');
+			self.Binary = ko.observable('');
+			self.ImgText = ko.observable('');
+			self.GetBinary = function (_data) {
+				self.ImgText(_data.files[0].name);
+				self.Binary(_data.files[0]);
+			}
+			self.AddProduct = function () {
+				$.ajax({
+					type: 'Post',
+					url: '../Home/BackMGT',
+					data: ko.toJSON(self),
+					contentType: 'application/json; charset=utf-8',
+					dataType: 'json',
+					success: function (data) {
+						console.log(data);
+					},
+					failure: function (errMsg) {
+						console.log(-999);
+					}
+				});
+			}
+			
+		};
+
+		var ProductList = function(){
+			var self = this;
+			self.Products = ko.observableArray([]);
+			self.GetProducts = ko.computed(function () {
+				$.ajax({
+					type: 'Post',
+					url: '../Home/BackMGT',
+					data: '',
+					contentType: 'application/json; charset=utf-8',
+					dataType: 'json',
+					success: function (data) {
+						for (var i = 0; i < data.length; i++) {
+							self.Products.push(new Product({
+								Pid: data[i].Pid,
+								Pname: data[i].Pname,
+								Price: data[i].Price,
+								Description: data[i].Description,
+								Binarys: data[i].Binarys,
+							}));
+						}
+					},
+					failure: function (errMsg) {
+						console.log(-999);
+					}
+				});
+			});
+		}
+
+		setTimeout(function () {
+			ko.applyBindings(new AddGroup(), document.getElementById('AddGroup'));
+			ko.applyBindings(new ProductList(), document.getElementById('ProductList'));
+		}, 100);
+		
+	})();
+	
+</script>

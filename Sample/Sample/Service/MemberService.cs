@@ -28,7 +28,17 @@ namespace Sample.Service
 
         public dynamic Delete(dynamic _Obj, dynamic _Para = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Member member = _Obj;
+                MyEF.Members.RemoveRange(MyEF.Members.Where(x => x.UserId == member.UserId));
+                MyEF.SaveChanges();
+                return ReturnCode.Success;
+            }
+            catch (Exception ex)
+            {
+                return ReturnCode.Fail;
+            }
         }
 
         public dynamic Init(dynamic _Obj, dynamic _Para = null)
