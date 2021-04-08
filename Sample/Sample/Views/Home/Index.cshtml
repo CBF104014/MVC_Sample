@@ -127,14 +127,6 @@
 			}
 		}
 
-		//驗證
-		function validate(self) {
-			//通過回傳true 否則回傳false
-			var KOvalidation = ko.validation.group(self, { deep: true });
-			KOvalidation.showAllMessages(true);
-			if (KOvalidation.isAnyMessageShown()) { alert('未填寫完畢'); return false; }
-			return true;
-		}
 
 		//綁定
 		setTimeout(function () {

@@ -24,7 +24,6 @@
     <Property Name="Pname" Type="nvarchar" MaxLength="100" Nullable="false" />
     <Property Name="Price" Type="int" Nullable="false" />
     <Property Name="Description" Type="nvarchar" MaxLength="200" Nullable="false" />
-    <Property Name="Rankey" Type="decimal" Precision="18" Scale="0" Nullable="false" />
     <Property Name="Binarys" Type="varbinary(max)" Nullable="false" />
   </EntityType>
   <EntityContainer Name="MyDataBaseModelStoreContainer">

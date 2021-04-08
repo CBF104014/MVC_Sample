@@ -1,4 +1,5 @@
-﻿using Sample.Cls;
+﻿using Newtonsoft.Json;
+using Sample.Cls;
 using Sample.Models;
 using Sample.Service;
 using System;
@@ -57,7 +58,7 @@ namespace Sample.Controllers
             ViewBag.Members = Result;
             return LoginInfo();
         }
-
+        
         public ActionResult BackMGT()
         {
             return LoginInfo();
@@ -70,9 +71,9 @@ namespace Sample.Controllers
             if (product.Pid == null)
             {
                 var Result = Service.Read("");
-                return Json(Result);
+                return Json(JsonConvert.SerializeObject(Result));
             }
-            return Service.Create(product);
+            return Json(Service.Create(product));
         }
 
         public ActionResult Test()

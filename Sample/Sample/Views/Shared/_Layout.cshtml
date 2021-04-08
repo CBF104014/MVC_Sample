@@ -84,8 +84,15 @@
 			UserId: "帳號",
 			Password: "密碼",
 			Name: "姓名",
-			Catagories: "分類",
-			Catagories1: "分類1",
+			Pid: "產品編號",
+			Pname: "產品名稱",
+			Price: "單價",
+			Description: "描述",
+			Image: "圖片",
+			ImagePreview: "圖片預覽",
+			Add: "新增",
+			Delete: "刪除",
+			Edit: "編輯",
 		},
 		en: {
 			Home: "Home",
@@ -97,8 +104,15 @@
 			UserId: "UserId",
 			Password: "Password",
 			Name: "Name",
-			Catagories: "Catagories",
-			Catagories1: "Catagories1",
+			Pid: "Pid",
+			Pname: "Pname",
+			Price: "Price",
+			Description: "Description",
+			Image: "Image",
+			ImagePreview: "Preview Image",
+			Add: "Add",
+			Delete: "Delete",
+			Edit: "Edit",
 		}
 	};
 	var vmdata = {};
@@ -127,4 +141,14 @@
 		ko.virtualElements.allowedBindings.i18n = true;
 		ko.applyBindings(vmdata['vm'] = new index_vm(), document.getElementById('Header'));
 	})();
+
+
+	//驗證
+	function validate(self) {
+		//通過回傳true 否則回傳false
+		var KOvalidation = ko.validation.group(self, { deep: true });
+		KOvalidation.showAllMessages(true);
+		if (KOvalidation.isAnyMessageShown()) { alert('未填寫完畢'); return false; }
+		return true;
+	}
 </script>

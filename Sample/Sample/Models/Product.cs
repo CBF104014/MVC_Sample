@@ -18,7 +18,6 @@ namespace Sample.Models
         public string Pname { get; set; }
         public int Price { get; set; }
         public string Description { get; set; }
-        public decimal Rankey { get; set; }
         public byte[] Binarys { get; set; }
     }
 }

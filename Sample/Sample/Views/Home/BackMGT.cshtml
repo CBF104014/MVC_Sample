@@ -3,31 +3,65 @@
 }
 
 <div class="container" id="BackMGT">
+	<br />
 	<div class="card card-body" id="AddGroup">
-		<div class="form-group">
-			<label>產品編號</label>
-			<input type="text" class="form-control" id="Pid">
-			<label>產品名稱</label>
-			<input type="text" class="form-control" id="Pname">
-			<label>單價</label>
-			<input type="number" class="form-control" id="Price">
-			<label>產品描述</label>
-			<input type="number" class="form-control" id="Description">
-			<div class="custom-file mt-2">
-				<input type="file" class="custom-file-input" id="customFileLang" data-bind="event:{ change: ()=>{ GetBinary($element) } }">
-				<label class="custom-file-label" for="customFileLang" data-browse="上傳圖檔" data-bind="text: ImgText">選擇上傳</label>
+		<div class="form-group card-body row">
+			<div class="col-md-5">
+				<label data-bind="i18n: 'Pid'">產品編號</label>
+				<input type="text" class="form-control" data-bind="value: Pid">
+				<label data-bind="i18n: 'Pname'">產品名稱</label>
+				<input type="text" class="form-control" data-bind="value: Pname">
+				<label data-bind="i18n: 'Price'">單價</label>
+				<input type="number" class="form-control" data-bind="value: Price">
+				<label data-bind="i18n: 'Description'">產品描述</label>
+				<textarea class="form-control" data-bind="value: Description"></textarea>
 			</div>
+			<div class="col-md-7">
+				<label data-bind="i18n: 'ImagePreview'"></label>
+				<div class="card card-body" style="height: 300px;">
+					<img class="h-100" src="" data-bind="attr: { src: ImgSrc }" />
+				</div>
+				<div class="custom-file mt-2">
+					<input type="file" class="custom-file-input" id="customFileLang" data-bind="event:{ change: ()=>{ GetBinary($element) } }">
+					<label class="custom-file-label" for="customFileLang" data-browse="上傳圖檔" data-bind="text: ImgText">選擇上傳</label>
+				</div>
+			</div>
+			
 		</div>
 		<button type="button" class="btn btn-primary" data-bind="click: AddProduct">
-			<i class="fa fa-plus-circle"></i> 新增
+			<i class="fa fa-plus-circle"></i> 
+			<span data-bind="i18n: 'Add'"></span>
 		</button>
 	</div>
+	<br />
 
-
-    <div class="card-body" id="ProductList">
-		<div data-bind="foreach: Products">
-			<label data-bind="text: Pname"></label>
-		</div>
+	<div class="card-body" id="ProductList">
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th scope="col" data-bind="i18n: 'Pid'"></th>
+					<th scope="col" data-bind="i18n: 'Pname'"></th>
+					<th scope="col" data-bind="i18n: 'Price'"></th>
+					<th scope="col" data-bind="i18n: 'Description'"></th>
+					<th scope="col" data-bind="i18n: 'Image'"></th>
+					<th scope="col">-</th>
+				</tr>
+			</thead>
+			<tbody data-bind="foreach: Products">
+				<tr>
+					<th data-bind="text: Pid"></th>
+					<td data-bind="text: Pname"></td>
+					<td data-bind="text: Price"></td>
+					<td data-bind="text: Description"></td>
+					<td>
+						<img src="" data-bind="attr: { src: ImgSrc }" style="width: 100px;" />
+					</td>
+					<td>
+						<button type="button" class="btn btn-outline-danger" data-bind="click: ProductDel, i18n: 'Delete'"></button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
 </div>
 <script>
@@ -39,21 +73,35 @@
 			self.Price = ko.observable(Obj.Price);
 			self.Description = ko.observable(Obj.Description);
 			self.Binarys = ko.observable(Obj.Binarys);
+			self.ImgSrc = ko.observable('data:image/gif;base64,' + self.Binarys());
+			self.ProductDel = function () {
+				alert('delete');
+			}
 		}
 
 		var AddGroup = function () {
 			var self = this;
-			self.Pid = ko.observable('');
-			self.Pname = ko.observable('');
-			self.Price = ko.observable('');
-			self.Description = ko.observable('');
-			self.Binary = ko.observable('');
+			self.Pid = ko.observable('').extend({ required: true });
+			self.Pname = ko.observable('').extend({ required: true });
+			self.Price = ko.observable('').extend({ required: true });
+			self.Description = ko.observable('').extend({ required: true });
+			self.Binarys = ko.observable('').extend({ required: true });
 			self.ImgText = ko.observable('');
+			self.ImgSrc = ko.observable('');
 			self.GetBinary = function (_data) {
 				self.ImgText(_data.files[0].name);
-				self.Binary(_data.files[0]);
+				var File = _data.files[0];
+				var reader = new FileReader();
+				reader.readAsDataURL(File);
+				reader.onload = function (e) {
+					var fileobj = reader.result.split("base64,")[1];
+					self.Binarys(fileobj);
+					 var fileURL = URL.createObjectURL(File); 
+					self.ImgSrc(fileURL);
+				};
 			}
 			self.AddProduct = function () {
+				if (!validate(self)) return;
 				$.ajax({
 					type: 'Post',
 					url: '../Home/BackMGT',
@@ -61,10 +109,14 @@
 					contentType: 'application/json; charset=utf-8',
 					dataType: 'json',
 					success: function (data) {
+						if (data == 1)
+							alert('成功');
+						else
+							alert('失敗');
 						console.log(data);
 					},
 					failure: function (errMsg) {
-						console.log(-999);
+						console.log(errMsg);
 					}
 				});
 			}
@@ -81,7 +133,8 @@
 					data: '',
 					contentType: 'application/json; charset=utf-8',
 					dataType: 'json',
-					success: function (data) {
+					success: function (rs) {
+						var data = JSON.parse(rs);
 						for (var i = 0; i < data.length; i++) {
 							self.Products.push(new Product({
 								Pid: data[i].Pid,
@@ -105,5 +158,36 @@
 		}, 100);
 		
 	})();
-	
+
+/*
+ * 資料base64轉為ArrayBuffer
+ * 用法:
+ * base64ToArrayBuffer(bytes);
+ *
+ */
+	function base64ToArrayBuffer(base64) {
+		var binaryString = window.atob(base64);
+		var binaryLen = binaryString.length;
+		var bytes = new Uint8Array(binaryLen);
+		for (var i = 0; i < binaryLen; i++) {
+			var ascii = binaryString.charCodeAt(i);
+			bytes[i] = ascii;
+		}
+		return bytes;
+	};
+
+
+/*
+ * 資料下載
+ * 用法:
+ * saveByteArray('契約範本', 'pdf', bytes);
+ * 
+ */
+	function saveByteArray(filename, type, byte) {
+		var blob = new Blob([byte], { type: `application/${type}` });
+		var link = document.createElement('a');
+		link.href = window.URL.createObjectURL(blob);
+		link.download = `${filename}.${type}`;
+		link.click();
+	};
 </script>
