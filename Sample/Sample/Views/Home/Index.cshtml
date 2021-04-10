@@ -79,6 +79,7 @@
 	
 </div>
 <script>
+	var vm = {};
 	(function () {
 		//登入
 		var LoginVm = function () {
@@ -95,6 +96,7 @@
 					dataType: 'json',
 					success: function (data) {
 						console.log(data);
+						location.reload();
 					},
 					failure: function (errMsg) {
 						console.log(-999);
@@ -130,8 +132,8 @@
 
 		//綁定
 		setTimeout(function () {
-			ko.applyBindings(vmdata['Login'] = new LoginVm(), document.getElementById('Login'));
-			ko.applyBindings(vmdata['SignUp'] = new SignUpVm(), document.getElementById('SignUp'));
+			ko.applyBindings(vm['Login'] = new LoginVm(), document.getElementById('Login'));
+			ko.applyBindings(vm['SignUp'] = new SignUpVm(), document.getElementById('SignUp'));
 		},100);
 		
 	})();

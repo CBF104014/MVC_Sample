@@ -61,7 +61,21 @@ namespace Sample.Service
 
         public dynamic Update(dynamic _Obj, dynamic _Para = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Product product = _Obj;
+                var _product = MyEF.Products.Find(product.Pid);
+                _product.Pname = product.Pname;
+                _product.Price = product.Price;
+                _product.Description = product.Description;
+                _product.Binarys = product.Binarys;
+                MyEF.SaveChanges();
+                return ReturnCode.Success;
+            }
+            catch (Exception ex)
+            {
+                return ReturnCode.Fail;
+            }
         }
     }
 }

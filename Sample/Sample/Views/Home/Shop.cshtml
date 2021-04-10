@@ -2,6 +2,113 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container" id="Shop">
-
+<div class="container-fluid" id="Shop">
+	<br />
+	<hr />
+	<div class="row">
+		<div class="col-md-3 card-body">
+			<div class="card">
+				<div class="card-header">
+					分類
+				</div>
+				<div class="card-body">
+					<div class="form-inline">
+						<span class="w-100 mb-1">價錢區間</span>
+						<input type="number" class="form-control col-md-5" data-bind="textInput: Pmin, event: { change: ()=>{ FilterPrice(); } }" />
+						<label class="ml-1 mr-1">-</label>
+						<input type="number" class="form-control col-md-6" data-bind="textInput: Pmax, event: { change: ()=>{ FilterPrice(); } }" />
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-9 card-body row">
+			<div class="col-12">
+				<div class="form-inline mb-2">
+					<label>排序: </label>
+					<select class="custom-select ml-1">
+						<option selected value="">Choose...</option>
+						<option>...</option>
+					</select>
+				</div>
+			</div>
+			<!-- ko foreach: Products -->
+			<div class="col-lg-4 col-md-6 mb-4">
+				<div class="card h-100">
+					<div style="overflow:hidden; height:400px;">
+						<a href="#"><img class="card-img-top" src="" alt="" data-bind="attr: { src: ImgSrc }"></a>
+					</div>
+					<div class="card-body">
+						<h4 class="card-title">
+							<a href="#" data-bind="text: Pname"></a>
+						</h4>
+						<h5 data-bind="text: '$' + Price()"></h5>
+						<p class="card-text" data-bind="text: Description"></p>
+					</div>
+					<div class="card-footer">
+						<small class="text-muted">★ ★ ★ ★ ☆</small>
+					</div>
+				</div>
+			</div>
+			<!-- /ko -->
+		</div>
+	</div>
 </div>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		var vm = {};
+		(function () {
+			share.vm.LoaderStart();
+			var Product = function (Obj) {
+				var self = this;
+				self.Pid = ko.observable(Obj.Pid);
+				self.Pname = ko.observable(Obj.Pname);
+				self.Price = ko.observable(Obj.Price);
+				self.Description = ko.observable(Obj.Description);
+				self.Binarys = ko.observable(Obj.Binarys);
+				self.ImgSrc = ko.observable('data:image/gif;base64,' + self.Binarys());
+			}
+			var Shop = function () {
+				var self = this;
+				self.Products = ko.observableArray([]);
+				self.Pmin = ko.observable(0);
+				self.Pmax = ko.observable(10000);
+				self.GetProducts = ko.computed(function () {
+					$.ajax({
+						type: 'Post',
+						url: '../Home/SelBackMGT',
+						data: '',
+						contentType: 'application/json; charset=utf-8',
+						dataType: 'json',
+						success: function (rs) {
+							var data = JSON.parse(rs);
+							for (var i = 0; i < data.length; i++) {
+								self.Products.push(new Product({
+									Pid: data[i].Pid,
+									Pname: data[i].Pname,
+									Price: data[i].Price,
+									Description: data[i].Description,
+									Binarys: data[i].Binarys,
+								}));
+							}
+							setTimeout(function () { 
+								share.vm.LoaderEnd();
+							}, 1);
+						},
+						failure: function (errMsg) {
+							console.log(-999);
+						}
+					});
+				});
+				self.FilterPrice = function () {
+					var Match = ko.utils.arrayFirst(self.Products(), function (item) {
+						return item.Price() >= self.Pmin() && item.Price() <= self.Pmax();
+					});
+					self.Products(Match);
+				}
+			}
+
+			ko.applyBindings(vm['Shop'] = new Shop(), document.getElementById('Shop'));
+		})();
+	});
+</script>

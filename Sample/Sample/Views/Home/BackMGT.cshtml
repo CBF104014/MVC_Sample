@@ -4,34 +4,51 @@
 
 <div class="container" id="BackMGT">
 	<br />
+	<hr />
 	<div class="card card-body" id="AddGroup">
 		<div class="form-group card-body row">
 			<div class="col-md-5">
-				<label data-bind="i18n: 'Pid'">產品編號</label>
-				<input type="text" class="form-control" data-bind="value: Pid">
-				<label data-bind="i18n: 'Pname'">產品名稱</label>
-				<input type="text" class="form-control" data-bind="value: Pname">
-				<label data-bind="i18n: 'Price'">單價</label>
-				<input type="number" class="form-control" data-bind="value: Price">
-				<label data-bind="i18n: 'Description'">產品描述</label>
-				<textarea class="form-control" data-bind="value: Description"></textarea>
+				<div class="form-group">
+					<label data-bind="i18n: 'Pid'">產品編號</label>
+					<input type="text" class="form-control" data-bind="value: Pid, enable: Enable">
+				</div>
+				<div class="form-group">
+					<label data-bind="i18n: 'Pname'">產品名稱</label>
+					<input type="text" class="form-control" data-bind="value: Pname">
+				</div>
+				<div class="form-group">
+					<label data-bind="i18n: 'Price'">單價</label>
+					<input type="number" class="form-control" data-bind="value: Price">
+				</div>
+				<div class="form-group">
+					<label data-bind="i18n: 'Description'">產品描述</label>
+					<textarea class="form-control" data-bind="value: Description"></textarea>
+				</div>
 			</div>
 			<div class="col-md-7">
 				<label data-bind="i18n: 'ImagePreview'"></label>
 				<div class="card card-body" style="height: 300px;">
-					<img class="h-100" src="" data-bind="attr: { src: ImgSrc }" />
+					<img class="mw-100 mh-100 m-auto" src="" data-bind="attr: { src: ImgSrc }" />
 				</div>
 				<div class="custom-file mt-2">
 					<input type="file" class="custom-file-input" id="customFileLang" data-bind="event:{ change: ()=>{ GetBinary($element) } }">
 					<label class="custom-file-label" for="customFileLang" data-browse="上傳圖檔" data-bind="text: ImgText">選擇上傳</label>
 				</div>
+				<div class="mt-2 d-flex ">
+					<button type="button" class="btn btn-primary flex-fill mr-1" data-bind="click: AddProduct">
+						<i class="fa fa-plus-circle"></i>
+						<span data-bind="i18n: 'Add'"></span>
+					</button>
+					<button type="button" class="btn btn-dark flex-fill mr-1" data-bind="click: UpdProduct">
+						<i class="fa fa-edit"></i>
+						<span data-bind="i18n: 'Edit'"></span>
+					</button>
+					<button type="button" class="btn btn-dark flex-fill mr-1" data-bind="click: CancelProduct">
+						<span data-bind="i18n: 'Cancel'"></span>
+					</button>
+				</div>
 			</div>
-			
 		</div>
-		<button type="button" class="btn btn-primary" data-bind="click: AddProduct">
-			<i class="fa fa-plus-circle"></i> 
-			<span data-bind="i18n: 'Add'"></span>
-		</button>
 	</div>
 	<br />
 
@@ -53,11 +70,12 @@
 					<td data-bind="text: Pname"></td>
 					<td data-bind="text: Price"></td>
 					<td data-bind="text: Description"></td>
-					<td>
-						<img src="" data-bind="attr: { src: ImgSrc }" style="width: 100px;" />
+					<td style="height: 100px;">
+						<img class="mw-100 mh-100 m-auto" src="" data-bind="attr: { src: ImgSrc }" />
 					</td>
 					<td>
 						<button type="button" class="btn btn-outline-danger" data-bind="click: ProductDel, i18n: 'Delete'"></button>
+						<button type="button" class="btn btn-outline-dark" data-bind="click: ProductUpd, i18n: 'Edit'"></button>
 					</td>
 				</tr>
 			</tbody>
@@ -65,6 +83,7 @@
 	</div>
 </div>
 <script>
+	var vm = {};
 	(function () {
 		var Product = function(Obj){
 			var self = this;
@@ -75,7 +94,28 @@
 			self.Binarys = ko.observable(Obj.Binarys);
 			self.ImgSrc = ko.observable('data:image/gif;base64,' + self.Binarys());
 			self.ProductDel = function () {
-				alert('delete');
+				$.ajax({
+					type: 'Post',
+					url: '../Home/DelBackMGT',
+					data: ko.toJSON({Pid: self.Pid()}),
+					contentType: 'application/json; charset=utf-8',
+					dataType: 'json',
+					success: function (data) {
+						if (data == 1) {
+							alert('成功');
+							vm['ProductList'].LoadProduct();
+						}else
+							alert('失敗');
+						console.log(data);
+					},
+					failure: function (errMsg) {
+						console.log(errMsg);
+					}
+				});
+			}
+			self.ProductUpd = function () {
+				koMapping(self, vm.AddGroup);
+				vm['AddGroup']['Enable'](false);
 			}
 		}
 
@@ -88,6 +128,7 @@
 			self.Binarys = ko.observable('').extend({ required: true });
 			self.ImgText = ko.observable('');
 			self.ImgSrc = ko.observable('');
+			self.Enable = ko.observable(true);
 			self.GetBinary = function (_data) {
 				self.ImgText(_data.files[0].name);
 				var File = _data.files[0];
@@ -104,14 +145,15 @@
 				if (!validate(self)) return;
 				$.ajax({
 					type: 'Post',
-					url: '../Home/BackMGT',
+					url: '../Home/AddBackMGT',
 					data: ko.toJSON(self),
 					contentType: 'application/json; charset=utf-8',
 					dataType: 'json',
 					success: function (data) {
-						if (data == 1)
+						if (data == 1) {
 							alert('成功');
-						else
+							vm['ProductList'].LoadProduct();
+						}else
 							alert('失敗');
 						console.log(data);
 					},
@@ -119,22 +161,49 @@
 						console.log(errMsg);
 					}
 				});
+				self.CancelProduct();
 			}
-			
+			self.UpdProduct = function () {
+				$.ajax({
+					type: 'Post',
+					url: '../Home/UpdBackMGT',
+					data: ko.toJSON(self),
+					contentType: 'application/json; charset=utf-8',
+					dataType: 'json',
+					success: function (data) {
+						if (data == 1) {
+							alert('成功');
+							vm['ProductList'].LoadProduct();
+						}else
+							alert('失敗');
+						console.log(data);
+					},
+					failure: function (errMsg) {
+						console.log(errMsg);
+					}
+				});
+				self.CancelProduct();
+			}
+			self.CancelProduct = function () {
+				ko.cleanNode(document.getElementById('AddGroup'));
+				ko.applyBindings(vm['AddGroup'] = new AddGroup(), document.getElementById('AddGroup'));
+			}
 		};
 
 		var ProductList = function(){
 			var self = this;
 			self.Products = ko.observableArray([]);
-			self.GetProducts = ko.computed(function () {
+			self.LoadProduct = function () {
+				console.log('Load');
 				$.ajax({
 					type: 'Post',
-					url: '../Home/BackMGT',
+					url: '../Home/SelBackMGT',
 					data: '',
 					contentType: 'application/json; charset=utf-8',
 					dataType: 'json',
 					success: function (rs) {
 						var data = JSON.parse(rs);
+						self.Products.removeAll();
 						for (var i = 0; i < data.length; i++) {
 							self.Products.push(new Product({
 								Pid: data[i].Pid,
@@ -149,45 +218,15 @@
 						console.log(-999);
 					}
 				});
-			});
+			}
+			self.GetProducts = ko.computed(function () { return self.LoadProduct(); });
 		}
 
 		setTimeout(function () {
-			ko.applyBindings(new AddGroup(), document.getElementById('AddGroup'));
-			ko.applyBindings(new ProductList(), document.getElementById('ProductList'));
+			ko.applyBindings(vm['AddGroup'] = new AddGroup(), document.getElementById('AddGroup'));
+			ko.applyBindings(vm['ProductList'] = new ProductList(), document.getElementById('ProductList'));
 		}, 100);
 		
 	})();
 
-/*
- * 資料base64轉為ArrayBuffer
- * 用法:
- * base64ToArrayBuffer(bytes);
- *
- */
-	function base64ToArrayBuffer(base64) {
-		var binaryString = window.atob(base64);
-		var binaryLen = binaryString.length;
-		var bytes = new Uint8Array(binaryLen);
-		for (var i = 0; i < binaryLen; i++) {
-			var ascii = binaryString.charCodeAt(i);
-			bytes[i] = ascii;
-		}
-		return bytes;
-	};
-
-
-/*
- * 資料下載
- * 用法:
- * saveByteArray('契約範本', 'pdf', bytes);
- * 
- */
-	function saveByteArray(filename, type, byte) {
-		var blob = new Blob([byte], { type: `application/${type}` });
-		var link = document.createElement('a');
-		link.href = window.URL.createObjectURL(blob);
-		link.download = `${filename}.${type}`;
-		link.click();
-	};
 </script>

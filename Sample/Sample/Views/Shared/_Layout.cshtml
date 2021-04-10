@@ -10,66 +10,77 @@
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="Header">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <i class="fa fa-android text-white mr-2"></i>
-        <a class="navbar-brand" href="#">Sample</a>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="Header">
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#Navbar" aria-controls="Navbar" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<i class="fa fa-android text-white mr-2"></i>
+		<a class="navbar-brand" href="#">Sample</a>
 
-        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
-            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link" data-bind="attr: { 'href': '@Url.Action("Index", "Home")' }, i18n:'Home'">
-                        首頁
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-bind="attr: { 'href': '@Url.Action("Member", "Home")' }, i18n:'Member'">
-                        會員
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-bind="attr: { 'href': '@Url.Action("Shop", "Home")' }, i18n:'Shop'">
-                        商品
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-bind="attr: { 'href': '@Url.Action("Cart", "Home")' }, i18n:'Cart'">
-                        購物車
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-bind="attr: { 'href': '@Url.Action("BackMGT", "Home")' }">
-                        後台管理
-                    </a>
-                </li>
-            </ul>
-            <div class="form-inline">
-                <select class="custom-select" data-bind="value: language">
-                    <option value="tw">中文</option>
-                    <option value="en">English</option>
-                </select>
-                <div class="form-inline ml-2">
-                    <i class="fa fa-user-circle text-white" style="font-size: 1.5rem;"></i>
-                    <a href="#" class="text-white ml-1" data-bind="click: Login">
-                        @ViewBag.UserId
-                    </a>
-                </div>
-            </div>
-        </div>
-    </nav>
-    <div class="h-100">
-        @RenderBody()
-        <hr />
-        <footer>
-        </footer>
-    </div>
+		<div class="collapse navbar-collapse" id="Navbar">
+			<ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+				<li class="nav-item">
+					<a class="nav-link" data-bind="attr: { 'href': '@Url.Action("Index", "Home")' }, i18n:'Home'">
+						首頁
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" data-bind="attr: { 'href': '@Url.Action("Member", "Home")' }, i18n:'Member'">
+						會員
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" data-bind="attr: { 'href': '@Url.Action("Shop", "Home")' }, i18n:'Shop'">
+						商品
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" data-bind="attr: { 'href': '@Url.Action("Cart", "Home")' }, i18n:'Cart'">
+						購物車
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" data-bind="attr: { 'href': '@Url.Action("BackMGT", "Home")' }">
+						後台管理
+					</a>
+				</li>
+			</ul>
+			<div class="form-inline">
+				<select class="custom-select" data-bind="value: language">
+					<option value="tw">中文</option>
+					<option value="en">English</option>
+				</select>
+				<div class="form-inline ml-2">
+					<i class="fa fa-user-circle text-white" style="font-size: 1.5rem;"></i>
+					<a href="#" class="text-white ml-1" data-bind="click: Login">
+						@ViewBag.UserId
+					</a>
+				</div>
+			</div>
+		</div>
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-    @Scripts.Render("~/bundles/knockout")
-    @RenderSection("scripts", required: false)
+		<!-- ko if: LoaderVisible -->
+		<div class="w-100 h-100 position-fixed" style="top:0px; left:0px; z-index:99999; background-color:rgba(236, 236, 236, 0.6) ">
+			<div class="d-flex h-100 align-items-center justify-content-center">
+				<div class="spinner-border text-danger" role="status">
+					<span class="sr-only">Loading...</span>
+				</div>
+			</div>
+		</div>
+		<!-- /ko -->
+	</nav>
+	<div class="h-100">
+		@RenderBody()
+		<hr />
+		<footer>
+		</footer>
+	</div>
+
+
+	@Scripts.Render("~/bundles/jquery")
+	@Scripts.Render("~/bundles/bootstrap")
+	@Scripts.Render("~/bundles/knockout")
+	@RenderSection("scripts", required: false)
 </body>
 </html>
 <script>
@@ -93,6 +104,7 @@
 			Add: "新增",
 			Delete: "刪除",
 			Edit: "編輯",
+			Cancel: "取消",
 		},
 		en: {
 			Home: "Home",
@@ -113,42 +125,101 @@
 			Add: "Add",
 			Delete: "Delete",
 			Edit: "Edit",
+			Cancel: "Cancel",
 		}
 	};
-	var vmdata = {};
+	var share = {};
 	(function () {
 		var index_vm = function () {
 			var self = this;
 			self._language = ko.observable('');
 			self.language = ko.observable('');
-			self.loa = (name) => {
-				$('#body').load(`${name}.html`);
-			}
 
-			self.Login = () => {
-				console.log('123');
+			self.Login = () => { }
+
+			self.LoaderVisible = ko.observable(false);
+			self.LoaderStart = () => {
+				self.LoaderVisible(true);
+			}
+			self.LoaderEnd = () => {
+				self.LoaderVisible(false);
 			}
 		}
 
         //語系切換
 		ko.bindingHandlers.i18n = {
 			update: function (element, valueAccessor) {
-				var l = vmdata.vm.language() == '' || undefined ? 'tw' : vmdata.vm.language();
+				var l = share.vm.language() == '' || undefined ? 'tw' : share.vm.language();
 				var v = lan[l][valueAccessor()];
 				element.textContent = v == undefined ? valueAccessor(): v;
 			}
 		};
 		ko.virtualElements.allowedBindings.i18n = true;
-		ko.applyBindings(vmdata['vm'] = new index_vm(), document.getElementById('Header'));
+		ko.applyBindings(share['vm'] = new index_vm(), document.getElementById('Header'));
 	})();
 
+	
+/*
+ * 資料base64轉為ArrayBuffer
+ * 用法:
+ * base64ToArrayBuffer(bytes);
+ *
+ */
+	function base64ToArrayBuffer(base64) {
+		var binaryString = window.atob(base64);
+		var binaryLen = binaryString.length;
+		var bytes = new Uint8Array(binaryLen);
+		for (var i = 0; i < binaryLen; i++) {
+			var ascii = binaryString.charCodeAt(i);
+			bytes[i] = ascii;
+		}
+		return bytes;
+	};
 
-	//驗證
+
+/*
+ * 資料下載
+ * 用法:
+ * saveByteArray('契約範本', 'pdf', bytes);
+ * 
+ */
+	function saveByteArray(filename, type, byte) {
+		var blob = new Blob([byte], { type: `application/${type}` });
+		var link = document.createElement('a');
+		link.href = window.URL.createObjectURL(blob);
+		link.download = `${filename}.${type}`;
+		link.click();
+	};
+
+
+/*
+ * 資料驗證
+ * 用法:
+ * validate(document.getElementById('YourId'));
+ * 
+ */
 	function validate(self) {
 		//通過回傳true 否則回傳false
 		var KOvalidation = ko.validation.group(self, { deep: true });
 		KOvalidation.showAllMessages(true);
 		if (KOvalidation.isAnyMessageShown()) { alert('未填寫完畢'); return false; }
 		return true;
+	}
+
+	
+/*
+ * 資料比對塞值
+ * 用法:
+ * koMapping(source, target);
+ * Example: A model To B model -> koMapping(A, B);
+ * 
+ */
+	function koMapping(source, target) {
+		for (var o in source) {
+			for (var n in target) {
+				if (o == undefined || n == undefined) continue;
+				if (o == n) target[n](source[o]());
+			}
+		}
 	}
 </script>

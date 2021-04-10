@@ -65,15 +65,32 @@ namespace Sample.Controllers
         }
 
         [HttpPost]
-        public ActionResult BackMGT(Product product)
+        public ActionResult SelBackMGT(Product product)
         {
             var Service = new ProductService();
-            if (product.Pid == null)
-            {
-                var Result = Service.Read("");
-                return Json(JsonConvert.SerializeObject(Result));
-            }
+            var Result = Service.Read("");
+            return Json(JsonConvert.SerializeObject(Result));
+        }
+
+        [HttpPost]
+        public ActionResult AddBackMGT(Product product)
+        {
+            var Service = new ProductService();
             return Json(Service.Create(product));
+        }
+
+        [HttpPost]
+        public ActionResult UpdBackMGT(Product product)
+        {
+            var Service = new ProductService();
+            return Json(Service.Update(product));
+        }
+
+        [HttpPost]
+        public ActionResult DelBackMGT(Product product)
+        {
+            var Service = new ProductService();
+            return Json(Service.Delete(product));
         }
 
         public ActionResult Test()
