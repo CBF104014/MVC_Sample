@@ -25,24 +25,25 @@
 			<div class="col-12">
 				<div class="form-inline mb-2">
 					<label>排序: </label>
-					<select class="custom-select ml-1">
-						<option selected value="">Choose...</option>
-						<option>...</option>
+					<select class="custom-select ml-1" data-bind="event: { change: () =>{ FilterSort(); } }">
+						<option selected value="0">預設</option>
+						<option value="1">名稱</option>
+						<option value="2">價錢</option>
 					</select>
 				</div>
 			</div>
-			<!-- ko foreach: Products -->
+			<!-- ko foreach: ProductList -->
 			<div class="col-lg-4 col-md-6 mb-4">
 				<div class="card h-100">
-					<div style="overflow:hidden; height:400px;">
+					<div style="overflow:hidden; height:300px;">
 						<a href="#"><img class="card-img-top" src="" alt="" data-bind="attr: { src: ImgSrc }"></a>
 					</div>
 					<div class="card-body">
-						<h4 class="card-title">
-							<a href="#" data-bind="text: Pname"></a>
-						</h4>
-						<h5 data-bind="text: '$' + Price()"></h5>
-						<p class="card-text" data-bind="text: Description"></p>
+						<a href="#" class="text-decoration-none" data-bind="text: Pname"></a>
+						<br />
+						<label class="text-monospace" data-bind="text: '$' + Price()"></label>
+						<br />
+						<label class="text-muted" data-bind="text: Description"></label>
 					</div>
 					<div class="card-footer">
 						<small class="text-muted">★ ★ ★ ★ ☆</small>
@@ -55,8 +56,8 @@
 </div>
 
 <script>
+	var vm = {};
 	document.addEventListener("DOMContentLoaded", function () {
-		var vm = {};
 		(function () {
 			share.vm.LoaderStart();
 			var Product = function (Obj) {
@@ -70,7 +71,10 @@
 			}
 			var Shop = function () {
 				var self = this;
+				//Data Source
 				self.Products = ko.observableArray([]);
+				//Clone
+				self.ProductList = ko.observableArray([]);
 				self.Pmin = ko.observable(0);
 				self.Pmax = ko.observable(10000);
 				self.GetProducts = ko.computed(function () {
@@ -91,9 +95,8 @@
 									Binarys: data[i].Binarys,
 								}));
 							}
-							setTimeout(function () { 
-								share.vm.LoaderEnd();
-							}, 1);
+							self.ProductList(self.Products());
+							share.vm.LoaderEnd();
 						},
 						failure: function (errMsg) {
 							console.log(-999);
@@ -101,10 +104,49 @@
 					});
 				});
 				self.FilterPrice = function () {
-					var Match = ko.utils.arrayFirst(self.Products(), function (item) {
+					var Match = ko.utils.arrayFilter(self.Products(), function (item) {
 						return item.Price() >= self.Pmin() && item.Price() <= self.Pmax();
 					});
-					self.Products(Match);
+					self.ProductList(Match);
+				}
+				self.FilterSort = function () {
+					//for (var i = 0; i < self.ProductList().length; i++) {
+					//	if (i + 1 >= self.ProductList().length) break;
+					//	if (self.ProductList()[i].Price<self.ProductList()[i + 1].Price) {
+					//		var temp = self.ProductList()[i];
+					//		self.ProductList()[i](self.ProductList()[i + 1]);
+					//		self.ProductList()[i + 1](temp);
+					//	}
+					//}
+					//debugger
+					var temp = self.ProductList()[0];
+					var temp1 = self.ProductList()[1];
+
+					self.ProductList()[0].Pid(temp1.Pid());
+					self.ProductList()[0].Pname(temp1.Pname());
+					self.ProductList()[0].Price(temp1.Price());
+					self.ProductList()[0].Description(temp1.Description());
+					self.ProductList()[0].Binarys(temp1.Binarys());
+					self.ProductList()[0].ImgSrc(temp1.ImgSrc());
+
+					
+					self.ProductList()[0].Pid(temp.Pid());
+					self.ProductList()[0].Pname(temp.Pname());
+					self.ProductList()[0].Price(temp.Price());
+					self.ProductList()[0].Description(temp.Description());
+					self.ProductList()[0].Binarys(temp.Binarys());
+					self.ProductList()[0].ImgSrc(temp.ImgSrc());
+
+					for (var i = 0; i <  self.ProductList().length; i++) {
+						console.log(self.ProductList()[i].Pid());
+					}
+					//var sorted = self.ProductList.sorted(function (left, right) {
+					//	//console.log(left.Pid(), right.Pid());
+					//	return left.Price === right.Price ? 0
+					//		: left.Price < right.Price ? -1
+					//			: 1;
+					//});
+					//self.ProductList(sorted);
 				}
 			}
 
